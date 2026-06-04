@@ -4,6 +4,7 @@ import "./globals.css";
 import { LenisProvider } from "@/components/LenisProvider";
 import { QuizProvider } from "@/context/QuizContext";
 import { LeadQuiz } from "@/components/LeadQuiz";
+import { FacebookPixel } from "@/components/FacebookPixel";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const sora = Sora({ variable: "--font-sora", subsets: ["latin"], weight: ["400", "600", "700", "800"] });
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <LeadQuiz />
           </LenisProvider>
         </QuizProvider>
+        <FacebookPixel />
       </body>
     </html>
   );

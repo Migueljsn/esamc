@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { useQuiz } from "@/context/QuizContext";
+import { trackLead } from "@/components/FacebookPixel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -195,9 +196,9 @@ export function LeadQuiz() {
   const next = async () => {
     if (!validate()) return;
     if (step === 7) {
-      // submit
       setSubmitting(true);
-      sendToSheets(form); // fire-and-forget
+      sendToSheets(form);
+      trackLead({ curso: form.curso, dificuldade: form.dificuldade });
       setSubmitting(false);
       animateTo(8, "fwd");
       return;
@@ -213,8 +214,8 @@ export function LeadQuiz() {
     setForm(updated);
     if (!autoNext) return;
     if (step === 7) {
-      // Último passo de dados: dispara envio antes de navegar
       sendToSheets(updated);
+      trackLead({ curso: updated.curso, dificuldade: updated.dificuldade });
       setTimeout(() => animateTo(8, "fwd"), 400);
     } else {
       setTimeout(() => animateTo(step + 1, "fwd"), 400);
