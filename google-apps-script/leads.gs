@@ -1,13 +1,14 @@
 /**
  * Escola Santa Angélica — Google Apps Script (Leads)
  *
- * Este script recebe leads de DUAS páginas diferentes do mesmo site:
+ * Este script recebe leads de TRÊS páginas diferentes do mesmo site:
  *   - Home (matrícula geral, Infantil ao Médio)      → aba "Leads Matrícula ESA"
+ *   - /teste-bolsa (Teste Bolsa, a partir do 2º ano) → aba "Leads Teste Bolsa ESA"
  *   - /masterclass (turma antiga, foco ENEM/R$70)    → aba "Leads ESA MasterClass"
  *
  * A escolha da aba é feita pelo campo `produto` enviado no payload
- * ("matricula" ou "masterclass"). Se vier vazio/desconhecido, cai em
- * "matricula" por padrão.
+ * ("matricula", "teste_bolsa" ou "masterclass"). Se vier vazio/desconhecido,
+ * cai em "matricula" por padrão.
  *
  * Para publicar uma mudança:
  *   1. Abra a planilha → Extensões → Apps Script.
@@ -19,12 +20,21 @@
 
 const SPREADSHEET_ID = ""; // preencha só se for script standalone
 
-const SHEET_MATRICULA   = "Leads Matrícula ESA";
-const SHEET_MASTERCLASS = "Leads ESA MasterClass";
+const SHEET_MATRICULA    = "Leads Matrícula ESA";
+const SHEET_TESTE_BOLSA  = "Leads Teste Bolsa ESA";
+const SHEET_MASTERCLASS  = "Leads ESA MasterClass";
 
 const HEADERS_MATRICULA = [
   "Data/Hora", "Etapa", "Nome do Responsável", "WhatsApp", "E-mail", "Bairro",
   "Nome do Aluno(a)", "Série Pretendida", "Quando Pretende Matricular",
+  "UTM Source", "UTM Medium", "UTM Campaign", "UTM Term", "UTM Content", "UTM ID",
+  "URL da Página", "Referrer", "Resolução de Tela", "Viewport",
+  "Idioma", "Fuso Horário", "Plataforma", "Tipo de Conexão", "User Agent",
+];
+
+const HEADERS_TESTE_BOLSA = [
+  "Data/Hora", "Etapa", "Nome do Responsável", "WhatsApp", "E-mail", "Bairro",
+  "Nome do Aluno(a)", "Série do Teste", "Quando Pretende Matricular (se aprovado)",
   "UTM Source", "UTM Medium", "UTM Campaign", "UTM Term", "UTM Content", "UTM ID",
   "URL da Página", "Referrer", "Resolução de Tela", "Viewport",
   "Idioma", "Fuso Horário", "Plataforma", "Tipo de Conexão", "User Agent",
@@ -123,9 +133,12 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData ? e.postData.contents : "{}");
     const isMasterclass = data.produto === "masterclass";
+    const isTesteBolsa  = data.produto === "teste_bolsa";
 
     const sheet = isMasterclass
       ? getOrCreateSheet_(SHEET_MASTERCLASS, HEADERS_MASTERCLASS)
+      : isTesteBolsa
+      ? getOrCreateSheet_(SHEET_TESTE_BOLSA, HEADERS_TESTE_BOLSA)
       : getOrCreateSheet_(SHEET_MATRICULA, HEADERS_MATRICULA);
 
     const row = isMasterclass ? [
@@ -211,6 +224,27 @@ function testarMatricula() {
         quando_matricular: "Este ano letivo",
         utm_source: "google", utm_medium: "cpc", utm_campaign: "matricula2026",
         page_url: "https://escolasantaangelica.com.br", referrer: "https://google.com",
+        screen_resolution: "1920x1080", viewport: "1440x900",
+        language: "pt-BR", timezone: "America/Fortaleza",
+        platform: "MacIntel", connection_type: "4g", user_agent: "Teste",
+      }),
+    },
+  };
+  Logger.log(doPost(e).getContent());
+}
+
+function testarTesteBolsa() {
+  const e = {
+    postData: {
+      contents: JSON.stringify({
+        produto: "teste_bolsa",
+        timestamp: new Date().toISOString(),
+        nome: "Teste Bolsa", whatsapp: "(86) 99111-2233",
+        email: "teste@esa.com", bairro: "Centro",
+        nome_aluno: "Aluno Teste", serie: "Ensino Médio",
+        quando_matricular: "Este ano letivo",
+        utm_source: "google", utm_medium: "cpc", utm_campaign: "testebolsa2026",
+        page_url: "https://escolasantaangelica.com.br/teste-bolsa", referrer: "https://google.com",
         screen_resolution: "1920x1080", viewport: "1440x900",
         language: "pt-BR", timezone: "America/Fortaleza",
         platform: "MacIntel", connection_type: "4g", user_agent: "Teste",
