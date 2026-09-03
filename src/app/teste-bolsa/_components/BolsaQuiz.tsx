@@ -15,12 +15,11 @@ interface FormData {
   bairro: string;
   serie: string;
   nome_aluno: string;
-  quando_matricular: string;
 }
 
 const INITIAL: FormData = {
   nome: "", whatsapp: "", email: "", bairro: "",
-  serie: "", nome_aluno: "", quando_matricular: "",
+  serie: "", nome_aluno: "",
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -77,7 +76,7 @@ async function sendToSheets(data: FormData) {
 
 function buildWhatsAppUrl(data: FormData) {
   const phone = "558688796879";
-  const msg = `Olá! Me chamo ${data.nome} 👋\n\nAcabei de me cadastrar no site da Escola Santa Angélica para agendar o Teste Bolsa (26/09) de ${data.nome_aluno || "meu(minha) filho(a)"}.\n\n🎓 Série pretendida: ${data.serie}\n📍 Bairro: ${data.bairro}\n📆 Quando pretende iniciar, se aprovado: ${data.quando_matricular}`;
+  const msg = `Olá! Me chamo ${data.nome} 👋\n\nAcabei de me cadastrar no site da Escola Santa Angélica para agendar o Teste Bolsa (26/09) de ${data.nome_aluno || "meu(minha) filho(a)"}, para matrícula no próximo ano letivo.\n\n🎓 Série pretendida: ${data.serie}\n📍 Bairro: ${data.bairro}`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -89,13 +88,7 @@ const SERIES = [
   { label: "Ensino Médio", emoji: "🎓" },
 ];
 
-const QUANDO = [
-  { label: "Este ano letivo", emoji: "🔥", sub: "Quero matricular agora, se aprovado" },
-  { label: "Próximo ano letivo", emoji: "📅", sub: "Estou me planejando" },
-  { label: "Ainda pesquisando", emoji: "🤔", sub: "Só quero conhecer a bolsa" },
-];
-
-const TOTAL_DATA_STEPS = 7; // steps 1–7
+const TOTAL_DATA_STEPS = 6; // steps 1–6
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -157,7 +150,7 @@ export function BolsaQuiz() {
   // ── countdown on success step ─────────────────────────────────────────────
 
   useEffect(() => {
-    if (step !== 8) return;
+    if (step !== 7) return;
     if (countdown <= 0) { window.open(buildWhatsAppUrl(form), "_blank"); closeQuiz(); return; }
     const t = setTimeout(() => setCountdown(c => c - 1), 1000);
     return () => clearTimeout(t);
@@ -194,12 +187,12 @@ export function BolsaQuiz() {
 
   const next = async () => {
     if (!validate()) return;
-    if (step === 7) {
+    if (step === 6) {
       setSubmitting(true);
       sendToSheets(form);
       trackLead({ serie: form.serie, nome_aluno: form.nome_aluno, produto: "teste_bolsa" });
       setSubmitting(false);
-      animateTo(8, "fwd");
+      animateTo(7, "fwd");
       return;
     }
     animateTo(step + 1, "fwd");
@@ -207,20 +200,12 @@ export function BolsaQuiz() {
 
   const back = () => { if (step > 0) animateTo(step - 1, "back"); };
 
-  const pick = (field: keyof FormData, value: string, autoNext = true) => {
-    const updated = { ...form, [field]: value };
-    setForm(updated);
-    if (!autoNext) return;
-    if (step === 7) {
-      sendToSheets(updated);
-      trackLead({ serie: updated.serie, nome_aluno: updated.nome_aluno, produto: "teste_bolsa" });
-      setTimeout(() => animateTo(8, "fwd"), 400);
-    } else {
-      setTimeout(() => animateTo(step + 1, "fwd"), 400);
-    }
+  const pick = (field: keyof FormData, value: string) => {
+    setForm(f => ({ ...f, [field]: value }));
+    setTimeout(() => animateTo(step + 1, "fwd"), 400);
   };
 
-  const progress = step >= 1 && step <= TOTAL_DATA_STEPS ? (step / TOTAL_DATA_STEPS) * 100 : step === 8 ? 100 : 0;
+  const progress = step >= 1 && step <= TOTAL_DATA_STEPS ? (step / TOTAL_DATA_STEPS) * 100 : step === 7 ? 100 : 0;
 
   // ── render step content ───────────────────────────────────────────────────
 
@@ -370,34 +355,8 @@ export function BolsaQuiz() {
           </StepLayout>
         );
 
-      // ── 7: urgência (SUGESTÃO COMERCIAL) ─────────────────────────────────
+      // ── 7: sucesso ────────────────────────────────────────────────────────
       case 7:
-        return (
-          <StepLayout
-            question="Se aprovado, quando pretende matricular?"
-            hint="Isso nos ajuda a preparar o atendimento"
-            error={error}
-          >
-            <div className="flex flex-col gap-3 mt-2">
-              {QUANDO.map(q => (
-                <button
-                  key={q.label}
-                  onClick={() => pick("quando_matricular", q.label)}
-                  className={`${CARD_BTN} ${form.quando_matricular === q.label ? CARD_BTN_ACTIVE : ""}`}
-                >
-                  <span className="text-xl">{q.emoji}</span>
-                  <div className="flex flex-col items-start">
-                    <span className="font-semibold">{q.label}</span>
-                    <span className="text-xs text-muted">{q.sub}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </StepLayout>
-        );
-
-      // ── 8: sucesso ────────────────────────────────────────────────────────
-      case 8:
         return (
           <div className="text-center">
             <div className="w-20 h-20 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center mx-auto mb-6">
@@ -450,7 +409,7 @@ export function BolsaQuiz() {
             />
           </div>
         )}
-        {step === 8 && (
+        {step === 7 && (
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-green-500/60" />
         )}
 
@@ -482,14 +441,14 @@ export function BolsaQuiz() {
           </div>
         </div>
 
-        {/* Footer navigation (steps 1-7, not on card-selection steps that auto-advance) */}
-        {step >= 1 && step <= 7 && step !== 5 && step !== 7 && (
+        {/* Footer navigation (steps 1-6, not on card-selection steps that auto-advance) */}
+        {step >= 1 && step <= 6 && step !== 5 && (
           <div className="flex items-center justify-between px-6 pb-6">
             <button onClick={back} className="text-sm text-muted hover:text-text transition-colors duration-300 flex items-center gap-1">
               <span>←</span> Voltar
             </button>
             <button onClick={next} disabled={submitting} className={`${BTN} py-3 px-6 text-base`}>
-              {submitting ? "Enviando..." : step === 6 ? "Quase lá →" : "Continuar →"}
+              {submitting ? "Enviando..." : step === 6 ? "Confirmar →" : "Continuar →"}
             </button>
           </div>
         )}

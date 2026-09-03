@@ -34,7 +34,7 @@ const HEADERS_MATRICULA = [
 
 const HEADERS_TESTE_BOLSA = [
   "Data/Hora", "Etapa", "Nome do Responsável", "WhatsApp", "E-mail", "Bairro",
-  "Nome do Aluno(a)", "Série do Teste", "Quando Pretende Matricular (se aprovado)",
+  "Nome do Aluno(a)", "Série do Teste",
   "UTM Source", "UTM Medium", "UTM Campaign", "UTM Term", "UTM Content", "UTM ID",
   "URL da Página", "Referrer", "Resolução de Tela", "Viewport",
   "Idioma", "Fuso Horário", "Plataforma", "Tipo de Conexão", "User Agent",
@@ -141,6 +141,24 @@ function doPost(e) {
       ? getOrCreateSheet_(SHEET_TESTE_BOLSA, HEADERS_TESTE_BOLSA)
       : getOrCreateSheet_(SHEET_MATRICULA, HEADERS_MATRICULA);
 
+    const commonTail = [
+      data.utm_source         || "",
+      data.utm_medium         || "",
+      data.utm_campaign       || "",
+      data.utm_term           || "",
+      data.utm_content        || "",
+      data.utm_id             || "",
+      data.page_url           || "",
+      data.referrer           || "",
+      data.screen_resolution  || "",
+      data.viewport           || "",
+      data.language           || "",
+      data.timezone           || "",
+      data.platform           || "",
+      data.connection_type    || "",
+      data.user_agent         || "",
+    ];
+
     const row = isMasterclass ? [
       data.timestamp          || new Date().toISOString(),
       "NOVA",
@@ -151,21 +169,17 @@ function doPost(e) {
       data.curso              || "",
       data.dificuldade        || "",
       data.quando_comecar     || "",
-      data.utm_source         || "",
-      data.utm_medium         || "",
-      data.utm_campaign       || "",
-      data.utm_term           || "",
-      data.utm_content        || "",
-      data.utm_id             || "",
-      data.page_url           || "",
-      data.referrer           || "",
-      data.screen_resolution  || "",
-      data.viewport           || "",
-      data.language           || "",
-      data.timezone           || "",
-      data.platform           || "",
-      data.connection_type    || "",
-      data.user_agent         || "",
+      ...commonTail,
+    ] : isTesteBolsa ? [
+      data.timestamp          || new Date().toISOString(),
+      "NOVA",
+      data.nome               || "",
+      whatsappLink_(data.whatsapp),
+      data.email              || "",
+      data.bairro             || "",
+      data.nome_aluno         || "",
+      data.serie              || "",
+      ...commonTail,
     ] : [
       data.timestamp          || new Date().toISOString(),
       "NOVA",
@@ -176,21 +190,7 @@ function doPost(e) {
       data.nome_aluno         || "",
       data.serie              || "",
       data.quando_matricular  || "",
-      data.utm_source         || "",
-      data.utm_medium         || "",
-      data.utm_campaign       || "",
-      data.utm_term           || "",
-      data.utm_content        || "",
-      data.utm_id             || "",
-      data.page_url           || "",
-      data.referrer           || "",
-      data.screen_resolution  || "",
-      data.viewport           || "",
-      data.language           || "",
-      data.timezone           || "",
-      data.platform           || "",
-      data.connection_type    || "",
-      data.user_agent         || "",
+      ...commonTail,
     ];
 
     // Insere logo abaixo do cabeçalho — leads mais recentes sempre no topo
@@ -242,7 +242,6 @@ function testarTesteBolsa() {
         nome: "Teste Bolsa", whatsapp: "(86) 99111-2233",
         email: "teste@esa.com", bairro: "Centro",
         nome_aluno: "Aluno Teste", serie: "Ensino Médio",
-        quando_matricular: "Este ano letivo",
         utm_source: "google", utm_medium: "cpc", utm_campaign: "testebolsa2026",
         page_url: "https://escolasantaangelica.com.br/teste-bolsa", referrer: "https://google.com",
         screen_resolution: "1920x1080", viewport: "1440x900",
