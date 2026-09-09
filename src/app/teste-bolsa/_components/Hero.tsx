@@ -74,7 +74,7 @@ export function Hero() {
         <div className="relative w-full overflow-hidden rounded-2xl md:rounded-3xl border border-accent/30 shadow-[0_0_60px_rgba(37,99,235,0.25)]">
           <Image
             src="/banner-teste-bolsa.jpg"
-            alt="Escola Santa Angélica — Teste Bolsa, 26 de setembro. Bolsa de até 100% a partir do 2º ano do Ensino Fundamental."
+            alt="Escola Santa Angélica — Teste Bolsa, 26 de setembro. Bolsa de até 100% a partir do 1º ano do Ensino Fundamental."
             width={1600}
             height={533}
             priority
@@ -108,7 +108,7 @@ export function Hero() {
 
         <div ref={subRef} className="mb-10">
           <p className="text-[clamp(1rem,2vw,1.25rem)] text-muted max-w-xl mx-auto leading-relaxed">
-            A partir do 2º ano do Ensino Fundamental. Agende o teste do seu
+            A partir do 1º ano do Ensino Fundamental. Agende o teste do seu
             filho ou filha e garanta a chance de estudar na ESA com desconto.
             <br className="hidden sm:block" />
             <span className="text-text/70"> Av. União, Memorare · </span>

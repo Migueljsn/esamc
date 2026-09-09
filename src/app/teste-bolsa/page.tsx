@@ -14,7 +14,7 @@ import { BolsaQuiz } from "./_components/BolsaQuiz";
 export const metadata: Metadata = {
   title: "Teste Bolsa — Escola Santa Angélica",
   description:
-    "Agende o Teste Bolsa da Escola Santa Angélica no dia 26 de setembro e concorra a uma bolsa de até 100% a partir do 2º ano do Ensino Fundamental.",
+    "Agende o Teste Bolsa da Escola Santa Angélica no dia 26 de setembro e concorra a uma bolsa de até 100% a partir do 1º ano do Ensino Fundamental.",
   keywords: [
     "Escola Santa Angélica", "ESA", "teste bolsa", "bolsa de estudos",
     "Ensino Fundamental", "Ensino Médio", "Teresina", "escola particular",

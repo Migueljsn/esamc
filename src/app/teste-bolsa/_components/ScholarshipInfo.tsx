@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const INCLUSIONS = [
   "Teste Bolsa no dia 26 de setembro",
-  "Válido a partir do 2º ano do Ensino Fundamental",
+  "Válido a partir do 1º ano do Ensino Fundamental",
   "Bolsa de até 100% na mensalidade para aprovados",
   "Resultado e condições explicados pela secretaria",
   "Vagas limitadas — agendamento por ordem de inscrição",
@@ -113,7 +113,7 @@ export function ScholarshipInfo() {
             <div className="flex items-start gap-2">
               <span className="font-display text-6xl md:text-7xl font-extrabold leading-none text-accent-light">100%</span>
             </div>
-            <p className="text-muted text-sm mt-3 max-w-[220px]">A partir do 2º ano do Ensino Fundamental</p>
+            <p className="text-muted text-sm mt-3 max-w-[220px]">A partir do 1º ano do Ensino Fundamental</p>
 
             <button
               onClick={openQuiz}

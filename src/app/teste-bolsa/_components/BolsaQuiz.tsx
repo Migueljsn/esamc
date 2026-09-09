@@ -83,7 +83,7 @@ function buildWhatsAppUrl(data: FormData) {
 // ─── Step data ────────────────────────────────────────────────────────────────
 
 const SERIES = [
-  { label: "Fundamental I (2º ao 5º ano)", emoji: "📘" },
+  { label: "Fundamental I (1º ao 5º ano)", emoji: "📘" },
   { label: "Fundamental II (6º ao 9º ano)", emoji: "📗" },
   { label: "Ensino Médio", emoji: "🎓" },
 ];
@@ -317,7 +317,7 @@ export function BolsaQuiz() {
         return (
           <StepLayout
             question="Para qual série é o Teste Bolsa?"
-            hint="O Teste Bolsa é válido a partir do 2º ano do Ensino Fundamental"
+            hint="O Teste Bolsa é válido a partir do 1º ano do Ensino Fundamental"
             error={error}
           >
             <div className="grid grid-cols-1 gap-3 mt-2">
